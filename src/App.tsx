@@ -1,26 +1,81 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
+import { useDrag, useDragLayer, useDrop } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend'
+interface ItemType {
+    color: string;
+}
+
+interface BoxProps {
+    color: string
+}
+// React DnD demo
+function Box(props: BoxProps) {
+    const ref = useRef(null)
+    const [{dragging},drag, dragPreview] = useDrag({
+        type: 'box',
+        item: {
+            color: props.color
+        },
+        collect(monitor) {
+            return {
+                dragging: monitor.isDragging()
+            }
+        },
+    })
+    useEffect(()=>{
+        drag(ref)
+        dragPreview(getEmptyImage(), {captureDraggingState: true})
+    },[])
+  return <div ref={ref} className={ dragging ? 'box dragging' : 'box'} style={{background: props.color || 'blue'}}></div>
+}
+
+const DragLayer = () => {
+    const { isDragging, item ,currentOffset } = useDragLayer((monitor) => (
+        {
+            item: monitor.getItem(),
+            isDragging: monitor.isDragging(),
+            currentOffset: monitor.getSourceClientOffset()
+        }
+    ));
+    if(!isDragging){ return null}
+    return (
+        <div className='drag-layer' style={{left: currentOffset?.x, top:currentOffset?.y}}>{item.color}拖拖拖</div>
+    )
+}
+
+
+function Container() {
+    const [boxes, setBoxes] = useState<ItemType []>([]);
+    const ref = useRef(null)
+    const [,drop] = useDrop(()=>{
+        return {
+            accept: 'box',
+            drop(item: ItemType){
+                setBoxes((boxes) => [...boxes, item])                
+
+            }
+        }
+    })
+    drop(ref)
+  return <div ref={ref} className="container">
+    {
+        boxes.map(item => {
+            return <Box color={item.color}></Box>
+        })
+    }
+  </div>
+}
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return <div>
+    <Container></Container>
+    <Box color='blue'></Box>
+    <Box color='red'></Box>
+    <Box color='green'></Box>
+    <DragLayer></DragLayer>
+  </div>
 }
 
 export default App;

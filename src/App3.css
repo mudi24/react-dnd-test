@@ -1,0 +1,44 @@
+.row {
+    padding: 10px;
+    border: 1px solid #000;
+    display: flex;
+    background-color: #fff;
+}
+.column{
+    flex: 1;
+    padding: 10px;
+    border: 1px solid blue;
+    background-color: #fff;
+}
+.column:not(:last-child) {
+    /* margin-right: 10px; */
+}
+.component {
+    height: 60px;
+    /* margin: 10px; */
+    border: 1px dashed #000;
+    background-color: #fff;
+}
+.drop-zone {}
+.drop-zone-horizental {
+    height: 20px;
+}
+.drop-zone-vertical {
+    width: 20px;
+}
+.drop-zone.focus {
+    background: blue;
+}
+
+
+
+.bottomBar {
+    border: 1px solid #000;
+    display: flex;
+}
+.bottomBar .bar-item {
+    border: 1px solid blue;
+    margin: 10px;
+    background-color: #fff;
+}
+
